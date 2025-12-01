@@ -1,0 +1,21 @@
+# --- Virtual environment ---
+.venv/
+
+# --- Python cache / compiled files ---
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# --- Jupyter ---
+.ipynb_checkpoints/
+
+# --- OS / IDE junk ---
+.DS_Store
+Thumbs.db
+.vscode/
+
+# --- Optional project folders ---
+data/
+outputs/
+reports/
