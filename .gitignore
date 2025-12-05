@@ -7,7 +7,6 @@ __pycache__/
 *.pyo
 *.pyd
 
-
 # --- Jupyter ---
 .ipynb_checkpoints/
 
@@ -16,7 +15,6 @@ __pycache__/
 Thumbs.db
 .vscode/
 
-# --- Optional project folders ---
+# --- Data and results ---
 data/
-outputs/
 reports/
