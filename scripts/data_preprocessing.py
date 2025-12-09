@@ -10,7 +10,7 @@ DATA_PROC = PROJECT_ROOT / "data" / "processed"
 DATA_PROC.mkdir(parents=True, exist_ok=True)
 
 
-def prepare_adult():
+def prepare_adult_income_data_symbolic():
 
     print("=======================")
     print("Preparing Adult dataset")
@@ -66,7 +66,7 @@ def prepare_german_credit_data_symbolic():
 
 
 def main():
-    prepare_adult()
+    prepare_adult_income_data_symbolic()
     prepare_german_credit_data_symbolic()
     print("All done.")
 

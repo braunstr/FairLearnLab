@@ -7,7 +7,7 @@ ADULT_CATEGORICAL = ["workclass","education","marital_status","occupation","rela
 GERMAN_NUMERIC = ["duration_months","credit_amount","installment_rate","residence_since","age","existing_credits","people_liable"]
 GERMAN_CATEGORICAL = ["status_existing_checking","credit_history","purpose","savings","employment_since","personal_status_sex","other_debtors","other_installment_plans","housing","property","job","telephone","foreign_worker"]
 
-def adult_preprocessor():
+def adult_income_preprocessor():
     preprocessor = ColumnTransformer(
         transformers = [
             ("num", StandardScaler(), ADULT_NUMERIC),
@@ -16,7 +16,7 @@ def adult_preprocessor():
     )
     return preprocessor
 
-def german_preprocessor():
+def german_credit_preprocessor():
     preprocessor= ColumnTransformer(
         transformers = [
             ("num",StandardScaler(),GERMAN_NUMERIC),
