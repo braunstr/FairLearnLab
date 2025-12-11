@@ -23,14 +23,14 @@ def get_baseline_classifiers() -> Dict[str, object]:
     }
 
 
-def train_adult_baselines():
+def train_adult_income_baselines():
     
     X_train, y_train, A_train, df_train = load_adult_income_dataset("train")
     X_val, y_val, A_val, df_val = load_adult_income_dataset("val")
     preprocessor = adult_income_preprocessor()
     estimators = get_baseline_classifiers()
-
     models: Dict[str, Pipeline] = {}
+
     for name, clf in estimators.items():
         pipe = Pipeline(steps=[("preprocess", preprocessor),("clf", clf)])
         pipe.fit(X_train, y_train)
@@ -41,14 +41,14 @@ def train_adult_baselines():
     return models
 
 
-def train_german_baselines():
+def train_german_credit_baselines():
     
     X_train, y_train, A_train, df_train = load_german_credit_dataset("train")
     X_val, y_val, A_val, df_val = load_german_credit_dataset("val")
     preprocessor = german_credit_preprocessor()
     estimators = get_baseline_classifiers()
-
     models: Dict[str, Pipeline] = {}
+
     for name, clf in estimators.items():
         pipe = Pipeline(steps=[("preprocess", preprocessor),("clf", clf)])
         pipe.fit(X_train, y_train)
