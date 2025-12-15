@@ -38,6 +38,7 @@ def train_adult_income_baselines():
         y_val_pred = pipe.predict(X_val)
         acc = accuracy_score(y_val, y_val_pred)
         print(f"[Adult income] {name}: val accuracy = {acc:.3f}")
+        
     return models
 
 
@@ -56,4 +57,5 @@ def train_german_credit_baselines():
         y_val_pred = pipe.predict(X_val)
         acc = accuracy_score(y_val, y_val_pred)
         print(f"[German credit] {name}: val accuracy = {acc:.3f}")
+
     return models
