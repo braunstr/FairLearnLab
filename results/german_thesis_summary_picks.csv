@@ -1,0 +1,7 @@
+dataset,pick,experiment,model,accuracy,SPD,EOD,DI,PPD
+german_credit,Best accuracy,baseline_models,gb,0.75,0.2249999999999999,0.3333333333333333,0.7352941176470589,0.4505747126436781
+german_credit,Fairest (min SPD),baseline_models,dummy,0.7,0.0,0.0,1.0,0.375
+german_credit,Fairest (min EOD),baseline_models,dummy,0.7,0.0,0.0,1.0,0.375
+german_credit,Closest DI to 1,baseline_models,dummy,0.7,0.0,0.0,1.0,0.375
+german_credit,Fairest (min PPD),mitigation_dp_sweep,logreg_fair_dp_eps0.01,0.705,0.525,0.2564102564102565,0.4166666666666666,0.1708333333333334
+german_credit,Best trade-off (alpha=0.5),baseline_models,dummy,0.7,0.0,0.0,1.0,0.375
