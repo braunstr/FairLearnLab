@@ -1,6 +1,6 @@
 #  FairLearnLab — Developing a Framework for Measuring and Optimizing Algorithmic Fairness in Machine Learning Model
 
-This project contains the code and experiments for my bachelor thesis on **measuring and improving algorithmic fairness** in supervised **tabular classification** tasks.  
+This project contains the code and experiments for my ***bachelor thesis** on **measuring and improving algorithmic fairness** in supervised **tabular classification** tasks.  
 Using the **UCI Adult Census Income** dataset and the **Statlog (German Credit Data)** dataset, the project trains baseline models, evaluates performance and fairness metrics across protected groups, and applies mitigation techniques using **Fairlearn** (e.g., Demographic Parity constraints and threshold optimization).
 
 The outputs of this project are reproducible **CSV tables** and **PNG plots** (, reproducible through notebooks, saved under `results/`), which are used directly for the thesis evaluation and discussion.
