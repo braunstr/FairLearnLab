@@ -115,11 +115,15 @@ IMPORTANT: In order to run the code in this project, python version 3.12 is requ
 ### Create & activate a virtual environment
 
 **Windows (PowerShell)**
+
 py -3.12 -m venv .venv
+
 .\.venv\Scripts\Activate.ps1
 
 **macOS/ Linux**
+
 python3.12 -m venv .venv
+
 source .venv/bin/activate
 
 ### Install dependencies
