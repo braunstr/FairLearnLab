@@ -137,8 +137,11 @@ Open and run the notebooks in notebooks/ to verify that the project is working. 
 Core functionality is implemented in src/ and can be imported in notebooks/scripts, e.g.:
 
 from src.data_loading import load_adult_income_dataset
+
 from src.models import train_adult_income_baselines
+
 from src.fairness import evaluate_adult_income_fairness
+
 from src.mitigation import train_adult_income_logreg_fair_dp
 
 
