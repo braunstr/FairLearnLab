@@ -1,9 +1,9 @@
-#  FairLearnLab — Developing a Framework for Measuring and Optimizing Algorithmic Fairness in Machine Learning Model
+# FairLearnLab — Developing a Framework for Measuring and Optimizing Algorithmic Fairness in Machine Learning Models
 
 This project contains the code and experiments for my **bachelor thesis** on **measuring and improving algorithmic fairness** in supervised **tabular classification** tasks.  
 Using the **UCI Adult Census Income** dataset and the **Statlog (German Credit Data)** dataset, the project trains baseline models, evaluates performance and fairness metrics across protected groups, and applies mitigation techniques using **Fairlearn** (e.g., Demographic Parity constraints and threshold optimization).
 
-The outputs of this project are reproducible **CSV tables** and **PNG plots** (, reproducible through notebooks, saved under `results/`), which are used directly for the thesis evaluation and discussion.
+The outputs of this project are reproducible **CSV tables** and **PNG plots** (reproducible through notebooks, saved under `results/`), which are used directly for the thesis evaluation and discussion.
 
 ## Scope / What’s included
 
@@ -12,16 +12,20 @@ This project contains a full, reproducible experimentation pipeline for **fairne
 ### Datasets
 - **UCI Adult Census Income**
   - Target: `income_binary` (<=50K vs >50K)
-  - Protected attributes evaluated: `sex` (main), optionally `race`
+  - Protected attribute evaluated: `sex` (main), optionally `race`
 - **Statlog (German Credit Data)**
   - Target: `credit_risk_binary` (good vs bad)
-  - Protected attribute evaluated: `personal_status_sex`
+  - Protected attribute evaluated: `sex` *(derived from the original `personal_status_sex` attribute)*
+
+> Note: In the German Credit dataset, the original attribute `personal_status_sex` encodes personal status together with sex.  
+> For a consistent **sex-focused** fairness evaluation across datasets, this project derives a clean binary `sex` column during preprocessing and uses it as the protected attribute.
 
 ### What the code does
 - **Data preprocessing & splits**
   - Converts the original UCI `.data` / `.test` files into processed CSV files.
   - Creates fixed **train / validation / test** splits.
   - Stores processed data under: `data/processed/`.
+  - For German Credit: derives `sex` from `personal_status_sex` and stores both in the processed splits.
 
 - **Baseline model training**
   - Trains multiple baseline classifiers with a shared preprocessing pipeline:
@@ -52,8 +56,8 @@ This project contains a full, reproducible experimentation pipeline for **fairne
 - Figures are saved as **PNG** in `results/plots`
 - Notebooks generate the final plots and summary tables used in the thesis discussion.
 
-
 ## Project structure
+
 FairLearnLab/
 
     data/ - included for reproducability 
@@ -83,7 +87,6 @@ FairLearnLab/
         plots/
             ... all plots that were generated during the experiments
 
-
     scripts/ - used to convert data files to .csv files and split the data in train/test/validation sets
         data_preprocessing.py
 
@@ -110,40 +113,33 @@ FairLearnLab/
 
 ## Install and run FairlearnLab
 
-IMPORTANT: In order to run the code in this project, python version 3.12 is required, since Fairlearn is not supported by any higher python versions yet
+IMPORTANT: In order to run the code in this project, python version 3.12 is required, since Fairlearn is not supported by any higher python versions yet.
 
 ### Create & activate a virtual environment
 
 **Windows (PowerShell)**
 
-py -3.12 -m venv .venv
-
+py -3.12 -m venv .venv  
 .\.venv\Scripts\Activate.ps1
 
 **macOS/ Linux**
 
-python3.12 -m venv .venv
-
+python3.12 -m venv .venv  
 source .venv/bin/activate
 
 ### Install dependencies
 pip install -r requirements.txt
 
-
 ### Run the notebooks
-Open and run the notebooks in notebooks/ to verify that the project is working. (results csvs and pots will be saved to results/)
+Open and run the notebooks in `notebooks/` to verify that the project is working (results CSVs and plots will be saved to `results/`).
 
 ### Using the source code modules
-Core functionality is implemented in src/ and can be imported in notebooks/scripts, e.g.:
+Core functionality is implemented in `src/` and can be imported in notebooks/scripts, e.g.:
 
-from src.data_loading import load_adult_income_dataset
-
-from src.models import train_adult_income_baselines
-
-from src.fairness import evaluate_adult_income_fairness
-
+from src.data_loading import load_adult_income_dataset  
+from src.models import train_adult_income_baselines  
+from src.fairness import evaluate_adult_income_fairness  
 from src.mitigation import train_adult_income_logreg_fair_dp
-
 
 ### Reproducing results (where outputs are saved)
 

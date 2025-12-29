@@ -17,7 +17,7 @@ def metric_frame(y_true, y_pred, A) -> MetricFrame:
     Args:
         y_true: Ground-truth labels
         y_pred: Model predictions (binary class labels)
-        A: protected attribute values aligned with y_true/y_pred (sex, personal_status_sex)
+        A: protected attribute values aligned with y_true/y_pred (sex)
 
     Returns:
         a Fairlearn MetricFrame object with overall and per-group metrics
@@ -76,7 +76,7 @@ def evaluate_adult_income_fairness(models: Dict[str, Pipeline], protected_attr: 
     return results
 
 
-def evaluate_german_credit_fairness(models: Dict[str, Pipeline], protected_attr: str = "personal_status_sex") -> Dict[str, MetricFrame]:
+def evaluate_german_credit_fairness(models: Dict[str, Pipeline], protected_attr: str = "sex") -> Dict[str, MetricFrame]:
     """
     Evaluating a set of trained models on the German Credit test split and print metrics overall + by group
 
@@ -87,11 +87,11 @@ def evaluate_german_credit_fairness(models: Dict[str, Pipeline], protected_attr:
     Returns:
         Dict mapping model name -> MetricFrame (overall + by_group metrics)
     """
-   
+
     X_test, y_test, A_test, df_test = load_german_credit_dataset("test")
 
-    # If the protected attribute is different than personal_status_sex, it will be overwritten
-    if protected_attr != "personal_status_sex":
+    # If the protected attribute is different than sex, it will be overwritten
+    if protected_attr != "sex":
         A_test = df_test[protected_attr]
 
     results: Dict[str, MetricFrame] = {}
@@ -124,6 +124,8 @@ def fairness_summary_from_metric_frame(mf: MetricFrame, model_name: str, dataset
       - Statistical parity difference is derived from selection_rate difference
       - Disparate impact ratio is derived from selection_rate ratio
       - Equal opportunity difference is derived from TPR difference
+      - FPR difference is derived from FPR difference
+      - Average odds difference is computed as 0.5 * (TPR_diff + FPR_diff)
       - Predictive parity difference is proxied via precision difference
 
     Args:
@@ -136,13 +138,19 @@ def fairness_summary_from_metric_frame(mf: MetricFrame, model_name: str, dataset
     """
 
     # Overall metrics
-    overall = mf.overall 
+    overall = mf.overall
 
     # Fairness gaps computed across groups:
     # - difference(): absolute gap (max - min) per metric
-    # - ratio(): min/max per metric (useful for Disparate Impact)   
-    diff = mf.difference()   
-    ratio = mf.ratio()       
+    # - ratio(): min/max per metric (useful for Disparate Impact)
+    diff = mf.difference()
+    ratio = mf.ratio()
+
+    # Equalized-odds relevant gaps:
+    # - EOD is the TPR gap (equal opportunity difference)
+    # - FPR gap is required to properly describe equalized odds behavior
+    fpr_diff = diff["fpr"]
+    avg_odds_diff = 0.5 * (diff["tpr"] + fpr_diff)
 
     return {
         "dataset": dataset_name,
@@ -154,6 +162,8 @@ def fairness_summary_from_metric_frame(mf: MetricFrame, model_name: str, dataset
         "statistical_parity_diff": diff["selection_rate"],
         "disparate_impact_ratio": ratio["selection_rate"],
         "equal_opportunity_diff": diff["tpr"],
+        "false_positive_rate_diff": fpr_diff,
+        "average_odds_diff": avg_odds_diff,
         "predictive_parity_diff": diff["precision"]
 }
 
@@ -175,7 +185,7 @@ def summarize_fairness_results(results: Dict[str, MetricFrame], dataset_name: st
 
         # Flattening MetricFrame into one row of summary metrics
         rows.append(fairness_summary_from_metric_frame(mf, model_name, dataset_name))
-        
+
     return pd.DataFrame(rows)
 
 

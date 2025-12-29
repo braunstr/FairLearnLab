@@ -88,7 +88,7 @@ def train_german_credit_logreg_fair_dp(eps: float = 0.01) -> ExponentiatedGradie
     """
     X_train, y_train, A_train, df_train = load_german_credit_dataset("train")
     # Protected attribute for German Credit
-    A_train = df_train["personal_status_sex"]
+    A_train = df_train["sex"]
     base_pipeline = german_credit_logreg_pipeline()
     constraint = DemographicParity()
     mitigator = ExponentiatedGradient(estimator=base_pipeline,constraints=constraint,eps=eps)
@@ -144,7 +144,7 @@ def train_german_credit_logreg_threshold(constraint: str = "equalized_odds") -> 
     base_pipeline = german_credit_logreg_pipeline()
     base_pipeline.fit(X_train, y_train)
     X_val, y_val, A_val, df_val = load_german_credit_dataset("val")
-    A_val = df_val["personal_status_sex"]
+    A_val = df_val["sex"]
     thresh_opt = ThresholdOptimizer(estimator=base_pipeline,constraints=constraint,predict_method="predict_proba")
     thresh_opt.fit(X_val, y_val, sensitive_features=A_val)
 

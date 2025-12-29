@@ -2,6 +2,6 @@ dataset,pick,experiment,model,accuracy,SPD,EOD,DI,PPD
 adult_income,Best accuracy,baseline_models,gb,0.8658698539176627,0.1642633262544764,0.0570102207693024,0.3235470894869429,0.0216695545387255
 adult_income,Fairest (min SPD),baseline_models,dummy,0.7543160690571049,0.0,0.0,,0.0
 adult_income,Fairest (min EOD),baseline_models,dummy,0.7543160690571049,0.0,0.0,,0.0
-adult_income,Closest DI to 1,mitigation_threshold,logreg_thresh_demographic_parity,0.8237715803452855,0.0048314406757204,0.3137632800598177,0.97458579438992,0.3230636931067474
+adult_income,Closest DI to 1,mitigation_threshold,logreg_thresh_demographic_parity,0.8238379814077025,0.0043386841959727,0.3128087779917299,0.977177777885638,0.322551531020851
 adult_income,Fairest (min PPD),baseline_models,dummy,0.7543160690571049,0.0,0.0,,0.0
 adult_income,Best trade-off (alpha=0.5),baseline_models,gb,0.8658698539176627,0.1642633262544764,0.0570102207693024,0.3235470894869429,0.0216695545387255

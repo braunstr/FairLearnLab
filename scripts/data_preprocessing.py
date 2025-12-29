@@ -98,6 +98,25 @@ def prepare_german_credit_data_symbolic():
     # Loading the dataset (space separated, no header row)
     german = pd.read_csv(DATA_RAW / "german.data", sep=" ", header=None, names=cols_credit)
 
+    german["personal_status_sex"] = german["personal_status_sex"].astype(str).str.strip()
+    # Deriving a clean binary sex attribute from the combined personal_status_sex codes
+    PERSONAL_STATUS_SEX_TO_SEX = {
+    "A91": "male",   # male: divorced/separated
+    "A92": "female", # female: divorced/separated/married
+    "A93": "male",   # male: single
+    "A94": "male",   # male: married/widowed
+    "A95": "female", # female: single
+    }
+
+    german["sex"] = german["personal_status_sex"].map(PERSONAL_STATUS_SEX_TO_SEX)
+
+    # Safety check: ensure all codes were mapped successfully
+    if german["sex"].isna().any():
+        unknown = sorted(german.loc[german["sex"].isna(), "personal_status_sex"].unique().tolist())
+        raise ValueError(f"Unknown personal_status_sex codes: {unknown}")
+
+    german["sex"] = german["sex"].astype("category")
+    
     # Creating a human-readable target label
     german["credit_risk"] = german["target_raw"].map({1: "good", 2: "bad"})
 
@@ -111,6 +130,7 @@ def prepare_german_credit_data_symbolic():
     # test_size=0.25 of 80% => 20% overall validation set
     train_df, val_df = train_test_split(train_full, test_size=0.25, random_state=42, stratify=train_full["credit_risk_binary"])
 
+    
     # Printing dataset sizes to verify splits quickly
     print(f"German train shape: {train_df.shape}")
     print(f"German test shape: {test_df.shape}")

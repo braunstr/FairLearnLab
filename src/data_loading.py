@@ -83,10 +83,10 @@ def load_german_credit_dataset(split:str = "train"):
     df= load_csv(f"german_{split}.csv")
     # Target variable used for model training/evaluation
     y = df["credit_risk_binary"]
-    # Sensitive/protected attribute used for fairness metrics
-    A = df["personal_status_sex"]
+    # Sensitive/protected attribute used for fairness metrics (derived from personal_status_sex)
+    A = df["sex"]
     # Feature matrix: dropping labels (binary + original text label and sex) so only predictors remain
-    X = df.drop(columns=["credit_risk_binary", "credit_risk", "target_raw", "personal_status_sex"])
+    X = df.drop(columns=["credit_risk_binary", "credit_risk", "target_raw", "personal_status_sex", "sex"])
    
     return X, y, A, df
 
