@@ -151,4 +151,3 @@ When you run the notebooks, outputs are saved automatically:
 - **Plots (PNG):** `results/plots/`
   - e.g. general data distribution, accuracy vs fairness trade-offs, bar charts for fairness metrics, calibration disparity plots, Pareto visualizations
 
-If you want to start clean, delete the `results/` folder contents and re-run the notebooks from top to bottom.
