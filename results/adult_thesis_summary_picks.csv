@@ -1,7 +1,7 @@
-dataset,pick,experiment,model,accuracy,SPD,EOD,DI,PPD
-adult_income,Best accuracy,baseline_models,gb,0.8658698539176627,0.1642633262544764,0.0570102207693024,0.3235470894869429,0.0216695545387255
-adult_income,Fairest (min SPD),baseline_models,dummy,0.7543160690571049,0.0,0.0,,0.0
-adult_income,Fairest (min EOD),baseline_models,dummy,0.7543160690571049,0.0,0.0,,0.0
-adult_income,Closest DI to 1,mitigation_threshold,logreg_thresh_demographic_parity,0.8238379814077025,0.0043386841959727,0.3128087779917299,0.977177777885638,0.322551531020851
-adult_income,Fairest (min PPD),baseline_models,dummy,0.7543160690571049,0.0,0.0,,0.0
-adult_income,Best trade-off (alpha=0.5),baseline_models,gb,0.8658698539176627,0.1642633262544764,0.0570102207693024,0.3235470894869429,0.0216695545387255
+dataset,pick,method,constraint,eps,model,base_model,accuracy,|SPD|,|EOD|,DI_gap,|PPD|
+adult_income,Best accuracy,baseline,,,gb,gb,0.8658698539176627,0.1642633262544764,0.0570102207693024,0.6764529105130571,0.0216695545387255
+adult_income,Fairest (min |SPD|),threshold_optimizer,demographic_parity,,logreg_thresh_demographic_parity,logreg,0.8233731739707836,0.0052256458595186,0.315354116839964,0.027487792406654443,0.3220894609241952
+adult_income,Fairest (min |EOD|),expgrad_dp,demographic_parity,0.01,rf_dp_eps0.01,rf,0.7821381142098274,0.0467115691217788,0.0120075331976504,0.15617208958111684,0.3655085826646118
+adult_income,Closest DI to 1 (min DI_gap),threshold_optimizer,demographic_parity,,tree_thresh_demographic_parity,tree,0.7391766268260292,0.0052530869694024,0.0122120285539493,0.01586257915222744,0.3813948880854509
+adult_income,Fairest (min |PPD|),baseline,,,rf,rf,0.8474103585657371,0.179827450381288,0.0692822270115517,0.6710956745196504,0.0074923959103969
+adult_income,Best trade-off (alpha=0.5),baseline,,,gb,gb,0.8658698539176627,0.1642633262544764,0.0570102207693024,0.6764529105130571,0.0216695545387255
