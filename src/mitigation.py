@@ -15,7 +15,7 @@ from .data_loading import load_adult_income_dataset, load_german_credit_dataset
 from .preprocessing import adult_income_preprocessor, german_credit_preprocessor
 
 
-# Allowed model keys (matching your models.py naming, excluding dummy)
+# Allowed model keys 
 ModelKey = Literal["logreg", "tree", "rf", "gb"]
 DatasetKey = Literal["adult_income", "german_credit"]
 
@@ -69,7 +69,6 @@ def _make_pipeline(dataset: DatasetKey, model: ModelKey) -> Pipeline:
 
 
 def _load(dataset: DatasetKey, split: str):
-    """Load (X, y, A, df) for the chosen dataset/split using your existing loaders"""
     if dataset == "adult_income":
         return load_adult_income_dataset(split)
     elif dataset == "german_credit":
@@ -77,9 +76,8 @@ def _load(dataset: DatasetKey, split: str):
     raise ValueError(f"Unknown dataset '{dataset}'")
 
 
-# ============================================================
+
 # Generic mitigation APIs (work for logreg/tree/rf/gb)
-# ============================================================
 
 def train_fair_dp(dataset: DatasetKey, model: ModelKey = "logreg", eps: float = 0.01, protected_attr: str = "sex") -> ExponentiatedGradient:
     """
@@ -89,7 +87,7 @@ def train_fair_dp(dataset: DatasetKey, model: ModelKey = "logreg", eps: float = 
         dataset: "adult_income" or "german_credit"
         model: "logreg" | "tree" | "rf" | "gb"
         eps: Allowed constraint violation (smaller eps => stricter fairness)
-        protected_attr: sensitive attribute column in df (you use "sex" in your project)
+        protected_attr: sensitive attribute column in df ("sex")
     """
     X_train, y_train, _, df_train = _load(dataset, "train")
 
@@ -117,15 +115,15 @@ def train_threshold_optimizer(dataset: DatasetKey, model: ModelKey = "logreg", c
         dataset: "adult_income" or "german_credit"
         model: "logreg" | "tree" | "rf" | "gb"
         constraint: "equalized_odds" or "demographic_parity"
-        protected_attr: sensitive attribute column in df (you use "sex" in your project)
+        protected_attr: sensitive attribute column in df ("sex")
         predict_method: usually "predict_proba"; if None, auto-select
     """
-    # 1) Train base model on train split
+    # Train base model on train split
     X_train, y_train, _, _df_train = _load(dataset, "train")
     base_pipeline = _make_pipeline(dataset, model)
     base_pipeline.fit(X_train, y_train)
 
-    # 2) Learn thresholds on validation split
+    # Learn thresholds on validation split
     X_val, y_val, _, df_val = _load(dataset, "val")
 
     if protected_attr not in df_val.columns:
@@ -149,37 +147,29 @@ def train_threshold_optimizer(dataset: DatasetKey, model: ModelKey = "logreg", c
 
 
 # ============================================================
-# Backwards-compatible functions (your notebooks already call these)
+# Backwards-compatible functions, so notebooks wont break
 # ============================================================
 
 def adult_income_logreg_pipeline() -> Pipeline:
-    """Kept for backwards compatibility with your existing notebook/code"""
+    
     return _make_pipeline(dataset="adult_income", model="logreg")
 
 
 def german_credit_logreg_pipeline() -> Pipeline:
-    """Kept for backwards compatibility with your existing notebook/code"""
     return _make_pipeline(dataset="german_credit", model="logreg")
 
 
 def train_adult_income_logreg_fair_dp(eps: float = 0.01) -> ExponentiatedGradient:
-    """Kept for backwards compatibility: logreg + DP on Adult (protected_attr='sex')"""
     return train_fair_dp(dataset="adult_income", model="logreg", eps=eps, protected_attr="sex")
 
 
 def train_german_credit_logreg_fair_dp(eps: float = 0.01) -> ExponentiatedGradient:
-    """
-    Kept for backwards compatibility: logreg + DP on German Credit
-    Your project derives the protected attribute into df['sex'], so we use protected_attr='sex'
-    """
     return train_fair_dp(dataset="german_credit", model="logreg", eps=eps, protected_attr="sex")
 
 
 def train_adult_income_logreg_threshold(constraint: str = "equalized_odds") -> ThresholdOptimizer:
-    """Kept for backwards compatibility: ThresholdOptimizer on Adult logreg"""
     return train_threshold_optimizer(dataset="adult_income", model="logreg", constraint=constraint,protected_attr="sex",predict_method="predict_proba")
 
 
 def train_german_credit_logreg_threshold(constraint: str = "equalized_odds") -> ThresholdOptimizer:
-    """Kept for backwards compatibility: ThresholdOptimizer on German logreg"""
     return train_threshold_optimizer(dataset="german_credit", model="logreg", constraint=constraint, protected_attr="sex", predict_method="predict_proba")

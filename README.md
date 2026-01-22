@@ -3,16 +3,19 @@
 This project contains the code and experiments for my **bachelor thesis** on **measuring and improving algorithmic fairness** in supervised **tabular classification** tasks.  
 Using the **UCI Adult Census Income** dataset and the **Statlog (German Credit Data)** dataset, the project trains baseline models, evaluates performance and fairness metrics across protected groups, and applies mitigation techniques using **Fairlearn** (e.g., Demographic Parity constraints and threshold optimization).
 
-The outputs of this project are reproducible **CSV tables** and **PNG plots** (reproducible through notebooks, saved under `results/`), which are used directly for the thesis evaluation and discussion.
+The outputs of this project are reproducible **CSV tables** and **PNG plots** (generated through notebooks and saved under `results/`), which are used directly for the thesis evaluation and discussion.
+
 
 ## Scope / What’s included
 
-This project contains a full, reproducible experimentation pipeline for **fairness evaluation and mitigation** on two tabular classification datasets:
+This project contains a full, reproducible experimentation pipeline for **fairness evaluation and mitigation** on two tabular classification datasets.
 
 ### Datasets
+
 - **UCI Adult Census Income**
   - Target: `income_binary` (<=50K vs >50K)
-  - Protected attribute evaluated: `sex` (main), optionally `race`
+  - Protected attribute evaluated: `sex`
+
 - **Statlog (German Credit Data)**
   - Target: `credit_risk_binary` (good vs bad)
   - Protected attribute evaluated: `sex` *(derived from the original `personal_status_sex` attribute)*
@@ -20,61 +23,90 @@ This project contains a full, reproducible experimentation pipeline for **fairne
 > Note: In the German Credit dataset, the original attribute `personal_status_sex` encodes personal status together with sex.  
 > For a consistent **sex-focused** fairness evaluation across datasets, this project derives a clean binary `sex` column during preprocessing and uses it as the protected attribute.
 
-### What the code does
-- **Data preprocessing & splits**
-  - Converts the original UCI `.data` / `.test` files into processed CSV files.
-  - Creates fixed **train / validation / test** splits.
-  - Stores processed data under: `data/processed/`.
-  - For German Credit: derives `sex` from `personal_status_sex` and stores both in the processed splits.
 
-- **Baseline model training**
-  - Trains multiple baseline classifiers with a shared preprocessing pipeline:
-    - DummyClassifier 
-    - Logistic Regression
-    - Decision Tree
-    - Random Forest
-    - Gradient Boosting
-  - Saves baseline performance & fairness result tables to `results/`.
+## What the code does
 
-- **Fairness evaluation**
-  - Computes *performance metrics* and *fairness metrics* using `fairlearn.metrics.MetricFrame`:
-    - Accuracy, Precision, Recall, F1
-    - Statistical Parity Difference (via selection rate gap)
-    - Disparate Impact Ratio (via selection rate ratio)
-    - Equal Opportunity Difference (TPR gap)
-    - Predictive Parity Difference (precision gap)
-    - Calibration within groups (Brier score, overall + group gap)
+### Data preprocessing & splits
+- Converts the original dataset files into processed CSV files.
+- Creates fixed **train / validation / test** splits.
+- Stores processed data under: `data/processed/`.
+- For German Credit: derives `sex` from `personal_status_sex` and stores the derived column in the processed splits.
 
-- **Mitigation techniques (Fairlearn)**
-  - **In-processing:** `ExponentiatedGradient + DemographicParity` (Logistic Regression base estimator)
-    - Includes an `eps` sweep to visualize the fairness/performance trade-off
-  - **Post-processing:** `ThresholdOptimizer`
-    - Supports `equalized_odds` and `demographic_parity`
 
-### Outputs (used for the thesis)
+### Baseline model training
+Trains multiple baseline classifiers with a shared preprocessing pipeline:
+- DummyClassifier
+- Logistic Regression
+- Decision Tree
+- Random Forest
+- Gradient Boosting
+
+Baseline performance & fairness results are saved to `results/`.
+
+### Fairness evaluation
+Computes *performance metrics* and *fairness metrics* using `fairlearn.metrics.MetricFrame`, including:
+- Accuracy, Precision, Recall, F1 
+- Statistical Parity Difference (via selection rate gap)
+- Disparate Impact Ratio (via selection rate ratio)
+- Equal Opportunity Difference (TPR gap)
+- Average Odds Difference (TPR/FPR gap summary)
+- Predictive Parity Difference (precision gap)
+
+**Calibration within groups** is measured using the **Brier score** (**baseline models only**):
+- overall Brier score
+- group Brier gap (max group − min group)
+
+### Mitigation techniques (Fairlearn)
+
+#### In-processing: ExponentiatedGradient + DemographicParity
+- Applied to all baseline models that produce meaningful outputs:
+  - `logreg`, `tree`, `rf`, `gb` (dummy excluded)
+- Uses an `eps` sweep to visualize the fairness/performance trade-off
+- Runs with a **light/heavy** split to manage runtime:
+  - light: `logreg`, `tree`
+  - heavy: `rf`, `gb`
+
+#### Post-processing: ThresholdOptimizer
+- Applied to: `logreg`, `tree`, `rf`, `gb` (dummy excluded)
+- Evaluated under two constraints:
+  - `equalized_odds`
+  - `demographic_parity`
+- Requires access to the protected attribute at prediction time via `sensitive_features`
+
+
+## Outputs (used for the thesis)
+
 - Result tables are saved as **CSV** in `results/`
-- Figures are saved as **PNG** in `results/plots`
-- Notebooks generate the final plots and summary tables used in the thesis discussion.
+  - baseline fairness summaries
+  - mitigation results (all models)
+  - legacy logreg-only exports (for backwards compatibility)
+  - calibration tables (baseline models)
+  - final summary tables (e.g., Pareto/frontier outputs)
+
+- Figures are saved as **PNG** in `results/plots/`
+  - data diagnostics
+  - baseline comparisons
+  - trade-off plots (accuracy vs fairness metrics)
+  - mitigation comparisons and summary plots
 
 ## Project structure
 
 FairLearnLab/
-
-    data/ - included for reproducability 
-        processed/ - Generated CSV splits used to train models
+    data/                       # Included for reproducibility
+        processed/              # Generated CSV splits used to train models
             adult_test.csv
             adult_train.csv
             adult_val.csv
             german_test.csv
             german_train.csv
             german_val.csv
-        raw/ - Original downloaded UCI files (not modified)
+        raw/                    # Original downloaded files (not modified)
             adult.data
             adult.names
             adult.test
             german.data
 
-    notebooks/ - Jupyter notebooks (experiments + plots + exports)
+    notebooks/                  # Jupyter notebooks (experiments + plots + exports)
         01_environment_and_data_sanity.ipynb
         02_baselines_train_eval.ipynb
         03_calibration_within_groups.ipynb
@@ -83,14 +115,15 @@ FairLearnLab/
         06_final_results_and_plots.ipynb
 
     results/
-        ... all csv files that were generated during the experiments
+        ...                     # All CSV files generated during experiments
         plots/
-            ... all plots that were generated during the experiments
+            ...                 # All plots generated during experiments
 
-    scripts/ - used to convert data files to .csv files and split the data in train/test/validation sets
+
+    scripts/                    # Data conversion + fixed train/val/test splits
         data_preprocessing.py
 
-    src/ - Reusable Python code (importable modules)
+    src/                        # Reusable Python code (importable modules)
         __init__.py
         data_loading.py
         fairness.py
@@ -99,55 +132,43 @@ FairLearnLab/
         preprocessing.py
 
     README.md
-    requirements.txt - environment dependencies (pip freeze)
+    requirements.txt            # Environment dependencies
     .gitignore
 
+
 ### Notes
-- `src/` contains **clean, reusable code** (FairlearnLab framework)
-- `notebooks/` contains **all experiments** and produces:
-  - CSV result tables -> `results/`
-  - PNG plots -> `results/plots/`
-- `data/raw/` stores the **original dataset files**
-- `data/processed/` stores the **final splits used in training/evaluation**
-- `results/` stores the **csv files and plots generated during the experiments**
+- `src/` contains reusable framework code (FairLearnLab)
+- `notebooks/` orchestrate experiments and export:
+  - CSV result tables → `results/`
+  - PNG figures → `results/plots/`
 
-## Install and run FairlearnLab
+## Install and run FairLearnLab
 
-IMPORTANT: In order to run the code in this project, python version 3.12 is required, since Fairlearn is not supported by any higher python versions yet.
+**Tested with Python 3.12.**
 
 ### Create & activate a virtual environment
 
 **Windows (PowerShell)**
+- `py -3.12 -m venv .venv`
+- `.\.venv\Scripts\Activate.ps1`
 
-py -3.12 -m venv .venv  
-.\.venv\Scripts\Activate.ps1
-
-**macOS/ Linux**
-
-python3.12 -m venv .venv  
-source .venv/bin/activate
+**macOS / Linux**
+- `python3.12 -m venv .venv`
+- `source .venv/bin/activate`
 
 ### Install dependencies
-pip install -r requirements.txt
+- `pip install -r requirements.txt`
 
 ### Run the notebooks
-Open and run the notebooks in `notebooks/` to verify that the project is working (results CSVs and plots will be saved to `results/`).
+Open and run the notebooks in `notebooks/` to reproduce the CSV results and plots (saved under `results/`).
 
 ### Using the source code modules
 Core functionality is implemented in `src/` and can be imported in notebooks/scripts, e.g.:
-
-from src.data_loading import load_adult_income_dataset  
-from src.models import train_adult_income_baselines  
-from src.fairness import evaluate_adult_income_fairness  
-from src.mitigation import train_adult_income_logreg_fair_dp
+- `from src.data_loading import load_adult_income_dataset`
+- `from src.models import train_adult_income_baselines`
+- `from src.mitigation import train_fair_dp, train_threshold_optimizer`
 
 ### Reproducing results (where outputs are saved)
-
-When you run the notebooks, outputs are saved automatically:
-
+When notebooks are executed, outputs are saved automatically to:
 - **Result tables (CSV):** `results/`
-  - e.g. baseline fairness summaries, mitigation sweeps, threshold comparisons, calibration tables, Pareto/frontier tables
-
 - **Plots (PNG):** `results/plots/`
-  - e.g. general data distribution, accuracy vs fairness trade-offs, bar charts for fairness metrics, calibration disparity plots, Pareto visualizations
-
