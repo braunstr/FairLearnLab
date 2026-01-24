@@ -1,7 +1,7 @@
 dataset,pick,method,constraint,eps,model,base_model,accuracy,|SPD|,|EOD|,DI_gap,|PPD|
-german_credit,Best accuracy,baseline,,,gb,gb,0.75,0.0619047619047619,0.0899999999999999,0.07951070336391441,0.072327714956262
-german_credit,Fairest (min |SPD|),threshold_optimizer,demographic_parity,,tree_thresh_demographic_parity,tree,0.665,0.0023809523809523,0.07,0.00347222222222221,0.1191565040650406
-german_credit,Fairest (min |EOD|),expgrad_dp,demographic_parity,0.02,logreg_dp_eps0.02,logreg,0.71,0.0333333333333333,0.0,0.045454545454545414,0.0890538033395176
-german_credit,Closest DI to 1 (min DI_gap),threshold_optimizer,demographic_parity,,tree_thresh_demographic_parity,tree,0.665,0.0023809523809523,0.07,0.00347222222222221,0.1191565040650406
-german_credit,Fairest (min |PPD|),expgrad_dp,demographic_parity,0.01,tree_dp_eps0.01,tree,0.72,0.1047619047619048,0.0749999999999999,0.13580246913580252,0.012037037037037
-german_credit,Best trade-off (alpha=0.5),expgrad_dp,demographic_parity,0.01,rf_dp_eps0.01,rf,0.74,0.0142857142857142,0.02,0.01680672268907557,0.0804424333836097
+german_credit,Best accuracy,expgrad_dp,demographic_parity,0.01,gb_dp_eps0.01,gb,0.755,0.0547619047619047,0.0899999999999999,0.07098765432098764,0.0798880275624461
+german_credit,Fairest (min |SPD|),threshold_optimizer,demographic_parity,,logreg_thresh_demographic_parity,logreg,0.735,0.0023809523809523,0.085,0.0035714285714285587,0.1459677419354839
+german_credit,Fairest (min |EOD|),expgrad_dp,demographic_parity,0.005,logreg_dp_eps0.005,logreg,0.71,0.0095238095238094,0.0,0.013289036544850363,0.0638947615691801
+german_credit,Closest DI to 1 (min DI_gap),threshold_optimizer,demographic_parity,,logreg_thresh_demographic_parity,logreg,0.735,0.0023809523809523,0.085,0.0035714285714285587,0.1459677419354839
+german_credit,Fairest (min |PPD|),expgrad_dp,demographic_parity,0.05,rf_dp_eps0.05,rf,0.745,0.0214285714285713,0.0499999999999999,0.025210084033613356,0.0307640297498309
+german_credit,Best trade-off (alpha=0.5),expgrad_dp,demographic_parity,0.01,rf_dp_eps0.01,rf,0.745,0.0357142857142857,0.025,0.04201680672268904,0.0639834881320949
