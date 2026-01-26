@@ -147,7 +147,7 @@ def train_threshold_optimizer(dataset: DatasetKey, model: ModelKey = "logreg", c
 
 
 
-# Backwards-compatible functions, so notebooks wont break
+# Backwards-compatible functions, so notebooks wont break (will be removed and notebooks will be adjusted later)
 def adult_income_logreg_pipeline() -> Pipeline:
     
     return _make_pipeline(dataset="adult_income", model="logreg")

@@ -1,8 +1,0 @@
-dataset,pick,method,constraint,eps,model,base_model,accuracy,|SPD|,|EOD|,DI_gap,|PPD|,Brier_overall
-german_credit,Best accuracy,threshold_optimizer,equalized_odds,,logreg_thresh_equalized_odds,logreg,0.755,0.026190476190476,0.0499999999999999,0.03571428571428559,0.1313131313131312,0.2262193074151361
-german_credit,Fairest (min |SPD|),expgrad_dp,demographic_parity,0.05,logreg_dp_eps0.05,logreg,0.715,0.0023809523809523,0.01,0.0033222591362126463,0.0658139534883721,0.2879638866601583
-german_credit,Fairest (min |EOD|),threshold_optimizer,demographic_parity,,rf_thresh_demographic_parity,rf,0.705,0.0738095238095238,0.0,0.09627329192546596,0.1290900941281936,0.2530257777777775
-german_credit,Closest DI to 1 (min DI_gap),expgrad_dp,demographic_parity,0.05,logreg_dp_eps0.05,logreg,0.715,0.0023809523809523,0.01,0.0033222591362126463,0.0658139534883721,0.2879638866601583
-german_credit,Fairest (min |PPD|),baseline,,,rf,rf,0.725,0.0071428571428571,0.005,0.008849557522124019,0.049594395280236,0.1661419999999999
-german_credit,Best calibration (min Brier),baseline,,,rf,rf,0.725,0.0071428571428571,0.005,0.008849557522124019,0.049594395280236,0.1661419999999999
-german_credit,Best trade-off (alpha=0.5),threshold_optimizer,equalized_odds,,logreg_thresh_equalized_odds,logreg,0.755,0.026190476190476,0.0499999999999999,0.03571428571428559,0.1313131313131312,0.2262193074151361

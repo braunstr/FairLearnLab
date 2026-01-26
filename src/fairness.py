@@ -256,7 +256,7 @@ def positive_class_probability(
       - For randomized postprocessors/reductions, Monte-Carlo yields the probability
         of predicting 1 under the randomized decision rule.
     """
-    # --- 1) Try predict_proba ---
+    # Try predict_proba
     if hasattr(estimator, "predict_proba"):
         try:
             if sensitive_features is None:
@@ -272,7 +272,7 @@ def positive_class_probability(
         except Exception:
             pass
 
-    # --- 2) Try pmf_predict / _pmf_predict (Fairlearn internals/variants) ---
+    # Try pmf_predict / _pmf_predict (Fairlearn internals/variants)
     for pmf_name in ["pmf_predict", "_pmf_predict"]:
         if hasattr(estimator, pmf_name):
             try:
@@ -289,7 +289,7 @@ def positive_class_probability(
             except Exception:
                 pass
 
-    # --- 3) Monte-Carlo fallback using predict ---
+    # Monte-Carlo fallback using predict
     n_mc = int(max(1, n_mc))
     rng = np.random.default_rng(seed)
 
@@ -311,7 +311,7 @@ def positive_class_probability(
 
 def brier_summary(y_true, y_prob, A) -> dict:
     """
-    Compute Brier score overall + disparity across sensitive groups.
+    Compute Brier score overall + disparity across sensitive groups
 
     Returns keys consistent with the baseline calibration table:
       - brier_overall
