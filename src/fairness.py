@@ -1,5 +1,6 @@
 from typing import Dict
 import pandas as pd
+import numpy as np
 from sklearn.pipeline import Pipeline
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, brier_score_loss
 from fairlearn.metrics import MetricFrame, selection_rate, true_positive_rate, false_positive_rate
@@ -233,3 +234,104 @@ def calibration_within_groups(models: Dict[str, Pipeline], X_test, y_test, A_tes
         rows.append({"dataset": dataset_name, "model": model_name, "brier_overall": overall, "brier_min_group": by_group.min(), "brier_max_group": by_group.max(), "brier_diff": by_group.max() - by_group.min()})
 
     return pd.DataFrame(rows)
+
+
+def positive_class_probability(
+    estimator,
+    X,
+    sensitive_features=None,
+    n_mc: int = 50,
+    seed: int = 42
+) -> np.ndarray:
+    """
+    Return a probability-like score in [0,1] for the positive class.
+
+    Priority:
+      1) predict_proba (optionally with sensitive_features if accepted)
+      2) pmf_predict / _pmf_predict (Fairlearn-style probability mass function)
+      3) Monte-Carlo mean of repeated predict calls (for randomized mitigators)
+
+    Notes:
+      - For ThresholdOptimizer, sensitive_features is usually REQUIRED at predict-time.
+      - For randomized postprocessors/reductions, Monte-Carlo yields the probability
+        of predicting 1 under the randomized decision rule.
+    """
+    # --- 1) Try predict_proba ---
+    if hasattr(estimator, "predict_proba"):
+        try:
+            if sensitive_features is None:
+                proba = estimator.predict_proba(X)
+            else:
+                proba = estimator.predict_proba(X, sensitive_features=sensitive_features)
+            proba = np.asarray(proba)
+            if proba.ndim == 2 and proba.shape[1] >= 2:
+                return np.clip(proba[:, 1], 0.0, 1.0)
+        except TypeError:
+            # predict_proba exists but doesn't accept sensitive_features or signature differs
+            pass
+        except Exception:
+            pass
+
+    # --- 2) Try pmf_predict / _pmf_predict (Fairlearn internals/variants) ---
+    for pmf_name in ["pmf_predict", "_pmf_predict"]:
+        if hasattr(estimator, pmf_name):
+            try:
+                fn = getattr(estimator, pmf_name)
+                if sensitive_features is None:
+                    pmf = fn(X)
+                else:
+                    pmf = fn(X, sensitive_features=sensitive_features)
+                pmf = np.asarray(pmf)
+                if pmf.ndim == 2 and pmf.shape[1] >= 2:
+                    return np.clip(pmf[:, 1], 0.0, 1.0)
+            except TypeError:
+                pass
+            except Exception:
+                pass
+
+    # --- 3) Monte-Carlo fallback using predict ---
+    n_mc = int(max(1, n_mc))
+    rng = np.random.default_rng(seed)
+
+    preds = []
+    for _ in range(n_mc):
+        # Encourage different draws if the estimator relies on NumPy's global RNG
+        np.random.seed(int(rng.integers(0, 2**32 - 1)))
+
+        if sensitive_features is None:
+            y_hat = estimator.predict(X)
+        else:
+            y_hat = estimator.predict(X, sensitive_features=sensitive_features)
+
+        preds.append(np.asarray(y_hat, dtype=float))
+
+    y_prob = np.mean(np.vstack(preds), axis=0)
+    return np.clip(y_prob, 0.0, 1.0)
+
+
+def brier_summary(y_true, y_prob, A) -> dict:
+    """
+    Compute Brier score overall + disparity across sensitive groups.
+
+    Returns keys consistent with the baseline calibration table:
+      - brier_overall
+      - brier_min_group
+      - brier_max_group
+      - brier_diff
+    """
+    mf_cal = MetricFrame(
+        metrics={"brier": brier_score_loss},
+        y_true=y_true,
+        y_pred=y_prob,
+        sensitive_features=A
+    )
+
+    overall = float(mf_cal.overall["brier"])
+    by_group = mf_cal.by_group["brier"]
+
+    return {
+        "brier_overall": overall,
+        "brier_min_group": float(by_group.min()),
+        "brier_max_group": float(by_group.max()),
+        "brier_diff": float(by_group.max() - by_group.min()),
+    }
