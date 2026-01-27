@@ -1,0 +1,8 @@
+dataset,pick,method,constraint,eps,model,base_model,accuracy,|SPD|,|EOD|,DI_gap,|PPD|,Brier_overall
+german_credit,Best accuracy,expgrad_dp,demographic_parity,0.05,gb_dp_eps0.05,gb,0.77,0.0047619047619047,0.025,0.006079027355623046,0.0810072223306657,0.2266893257818992
+german_credit,Fairest (min |SPD|),expgrad_dp,demographic_parity,0.05,gb_dp_eps0.05,gb,0.77,0.0047619047619047,0.025,0.006079027355623046,0.0810072223306657,0.2266893257818992
+german_credit,Fairest (min |EOD|),expgrad_dp,demographic_parity,0.005,logreg_dp_eps0.005,logreg,0.71,0.0095238095238094,0.0,0.013289036544850363,0.0638947615691801,0.2847222222222222
+german_credit,Closest DI to 1 (min DI_gap),expgrad_dp,demographic_parity,0.05,gb_dp_eps0.05,gb,0.77,0.0047619047619047,0.025,0.006079027355623046,0.0810072223306657,0.2266893257818992
+german_credit,Fairest (min |PPD|),expgrad_dp,demographic_parity,0.01,rf_dp_eps0.01,rf,0.74,0.0428571428571429,0.0549999999999999,0.04761904761904756,0.0444444444444445,0.2361419408579758
+german_credit,Best calibration (min Brier),baseline,,,rf,rf,0.725,0.0071428571428571,0.005,0.008849557522124019,0.049594395280236,0.1661419999999999
+german_credit,Best trade-off (alpha=0.5),expgrad_dp,demographic_parity,0.05,gb_dp_eps0.05,gb,0.77,0.0047619047619047,0.025,0.006079027355623046,0.0810072223306657,0.2266893257818992
